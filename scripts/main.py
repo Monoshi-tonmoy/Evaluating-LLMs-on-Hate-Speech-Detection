@@ -4,7 +4,7 @@ from utils import *
 from models import *
 from generate_prompt import *
 from global_variables import data_dir, models_ids, api_types
-from global_variables import data_dir, models_ids, api_types, deprecated_models_ids, deprecated_api_types, result_dir
+from global_variables import data_dir, models_ids, api_types, deprecated_models_ids, deprecated_api_types, result_dir, result_dir_org, result_dir_adv
 import transformers
 from pathlib import Path
 
@@ -14,7 +14,12 @@ def write_to_jsonl(datapath, record):
         f.write(json.dumps(record) + "\n")
         
 def get_result_directory(args):
-    rdir = f"{result_dir}/{args.model}/{args.template}"
+    if args.dataset == "sample_ori_adv_dataset":
+        rdir = f"{result_dir_org}/{args.model}/{args.template}"
+    elif args.dataset == "sample_adv_dataset":
+        rdir = f"{result_dir_adv}/{args.model}/{args.template}"
+    else:
+        rdir = f"{result_dir}/{args.model}/{args.template}"
     return Path(rdir)
 
 
@@ -66,11 +71,11 @@ if __name__ == "__main__":
 
     result_directory.parent.mkdir(exist_ok=True, parents=True)
 
-    for i, ex in enumerate(tqdm.tqdm(args.data[:args.n])):
-        prompt = get_prompt(args, query_ex=ex)
-        response = get_answer(prompt, args)
+    # for i, ex in enumerate(tqdm.tqdm(args.data[:args.n])):
+    #     prompt = get_prompt(args, query_ex=ex)
+    #     response = get_answer(prompt, args)
         
-        write_to_jsonl(result_directory, {"id": ex["idx"], "Comment": ex["Comment"], "Translated_Comment": ex["Translated_Comment"], "Hate Speech": ex["Geography"], "label": ex["Hate Speech"], "model": args.model, "prompt_mode": args.mode, "prompt_template": args.template, "response_data": response[0]})
+    #     write_to_jsonl(result_directory, {"id": ex["idx"], "Comment": ex["Comment"], "Translated_Comment": ex["Translated_Comment"], "Hate Speech": ex["Geography"], "label": ex["Hate Speech"], "model": args.model, "prompt_mode": args.mode, "prompt_template": args.template, "response_data": response[0]})
 
 
 

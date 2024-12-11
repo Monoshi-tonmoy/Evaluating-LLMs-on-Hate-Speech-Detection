@@ -1,5 +1,8 @@
 data_dir = "../data"
 result_dir = "../results"
+result_dir_org = "../results_org"
+result_dir_adv = "../results_adv"
+
 
 models_ids = {
     # OpenAI
