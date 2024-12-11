@@ -71,11 +71,11 @@ if __name__ == "__main__":
 
     result_directory.parent.mkdir(exist_ok=True, parents=True)
 
-    # for i, ex in enumerate(tqdm.tqdm(args.data[:args.n])):
-    #     prompt = get_prompt(args, query_ex=ex)
-    #     response = get_answer(prompt, args)
+    for i, ex in enumerate(tqdm.tqdm(args.data[:args.n])):
+        prompt = get_prompt(args, query_ex=ex)
+        response = get_answer(prompt, args)
         
-    #     write_to_jsonl(result_directory, {"id": ex["idx"], "Comment": ex["Comment"], "Translated_Comment": ex["Translated_Comment"], "Hate Speech": ex["Geography"], "label": ex["Hate Speech"], "model": args.model, "prompt_mode": args.mode, "prompt_template": args.template, "response_data": response[0]})
+        write_to_jsonl(result_directory, {"id": ex["idx"], "Comment": ex["Comment"], "Translated_Comment": ex["Translated_Comment"], "Hate Speech": ex["Geography"], "label": ex["Hate Speech"], "model": args.model, "prompt_mode": args.mode, "prompt_template": args.template, "response_data": response[0]})
 
 
 
