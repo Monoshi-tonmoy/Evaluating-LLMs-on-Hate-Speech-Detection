@@ -3,21 +3,27 @@ import tqdm
 from utils import *
 from models import *
 from generate_prompt import *
-from global_variables import data_dir, models_ids, api_types
 from global_variables import data_dir, models_ids, api_types, deprecated_models_ids, deprecated_api_types, result_dir, result_dir_org, result_dir_adv
 import transformers
 from pathlib import Path
+import re
 
 
 def write_to_jsonl(datapath, record):
-    with open(datapath, "a") as f:
-        f.write(json.dumps(record) + "\n")
+    with open(datapath, "a", encoding="utf-8") as f:
+        f.write(json.dumps(record, ensure_ascii=False) + "\n")
         
 def get_result_directory(args):
     if args.dataset == "sample_ori_adv_dataset":
         rdir = f"{result_dir_org}/{args.model}/{args.template}"
     elif args.dataset == "sample_adv_dataset":
         rdir = f"{result_dir_adv}/{args.model}/{args.template}"
+    elif args.dataset == "Bengali_Translation":
+        rdir = f"{data_dir}/Bengali_data"
+    elif args.dataset == "codellama_34b_Bengali":
+        rdir = f"../codellama34_results/{args.model}/{args.template}"
+    elif args.dataset == "gpt3.5_Bengali":
+        rdir = f"../gpt_results/{args.model}/{args.template}"
     else:
         rdir = f"{result_dir}/{args.model}/{args.template}"
     return Path(rdir)
@@ -58,7 +64,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     args.model_ = get_model(args)
-    args.data = read_jsonl(f"{data_dir}/{args.dataset}.jsonl")
+    
+    if args.dataset == "Bengali_Translation":
+        args.data = read_jsonl(f"{data_dir}/Bengali_filtered_dataset.jsonl")
+    else:
+        args.data = read_jsonl(f"{data_dir}/{args.dataset}.jsonl")
     get_prompt = get_prompt_function(args)
     
 
@@ -75,7 +85,21 @@ if __name__ == "__main__":
         prompt = get_prompt(args, query_ex=ex)
         response = get_answer(prompt, args)
         
-        write_to_jsonl(result_directory, {"id": ex["idx"], "Comment": ex["Comment"], "Translated_Comment": ex["Translated_Comment"], "Hate Speech": ex["Geography"], "label": ex["Hate Speech"], "model": args.model, "prompt_mode": args.mode, "prompt_template": args.template, "response_data": response[0]})
+        if args.dataset == "Bengali_Translation":
+            translated_english = response[0]['output_without_input']
+            match = re.search(r'\[TRANSLATION\]\s*(.*?)\s*\[\/TRANSLATION\\?\]', translated_english, re.DOTALL)
+            enlgish_sentence = match.group(1) if match else None
+            write_to_jsonl(result_directory, {
+                "id": ex["idx"],
+                "Comment": ex["Comment"],
+                "Translated_Comment": enlgish_sentence,
+                "Hate Speech": ex["Hate Speech"],
+                "Geography": ex["Geography"]
+            })
+        elif args.dataset == "codellama_34b_Bengali":
+            write_to_jsonl(result_directory, {"id": ex["id"], "Comment": ex["Comment"], "Translated_Comment": ex["Translated_Comment"], "Hate Speech": ex["Geography"], "label": ex["Hate Speech"], "model": args.model, "prompt_mode": args.mode, "prompt_template": args.template, "response_data": response[0]})
+        else:    
+            write_to_jsonl(result_directory, {"id": ex["idx"], "Comment": ex["Comment"], "Translated_Comment": ex["Translated_Comment"], "Hate Speech": ex["Geography"], "label": ex["Hate Speech"], "model": args.model, "prompt_mode": args.mode, "prompt_template": args.template, "response_data": response[0]})
 
 
 

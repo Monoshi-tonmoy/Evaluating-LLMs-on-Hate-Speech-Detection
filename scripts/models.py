@@ -126,17 +126,17 @@ class Model:
 
 
 
-    def tokenize_mistral(self, dialogs, prefix):
+    def tokenize_mistral(self, dialogs):
         dialog_tokens = self.tokenizer.apply_chat_template(dialogs, return_tensors="pt").to(self.device)
         return dialog_tokens
 
 
 
 
-    def tokenize_starchat(self, dialogs, prefix):
+    def tokenize_starchat(self, dialogs):
         return self.tokenizer.encode(dialogs, return_tensors="pt").to(self.device)
 
-    def tokenize_wizardcoder(self, dialogs, prefix):
+    def tokenize_wizardcoder(self, dialogs):
         return self.tokenizer.encode(dialogs, return_tensors="pt").to(self.device)
 
 

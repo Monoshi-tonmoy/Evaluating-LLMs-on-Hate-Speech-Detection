@@ -32,6 +32,7 @@ models_ids = {
     "llama3": "meta-llama/Llama-3.1-8B",
     "semcoder": "semcoder/semcoder",
     "semcoder-s": "semcoder/semcoder_s_1030",
+    "banglallm": "BanglaLLM/bangla-llama-13b-instruct-v0.1",
 
     "deepseek33": "deepseek-ai/deepseek-coder-33b-instruct",
     "deepseek6.7": "deepseek-ai/deepseek-coder-6.7b-instruct",
@@ -126,6 +127,7 @@ api_types = {
 
     "deepseek33": "llama",
     "deepseek6.7": "llama",
+    "banglallm": "llama",
 
     # StarCoder
     "starcoder-ta": "starcoder-ta",
